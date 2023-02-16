@@ -6,7 +6,7 @@
 #    By: dmanuel- <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/01 10:16:37 by dmanuel-          #+#    #+#              #
-#    Updated: 2023/02/13 13:56:15 by dmanuel-         ###   ########.fr        #
+#    Updated: 2023/02/16 11:43:21 by dmanuel-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,9 @@ SRCS = ./src/ft_atoi.c ./src/ft_bzero.c ./src/ft_calloc.c ./src/ft_isalnum.c ./s
 ./src/ft_putnbr_fd.c ./src/ft_putpoint.c ./src/ft_putstr_fd.c ./src/ft_split.c ./src/ft_strchr.c \
 ./src/ft_strdup.c ./src/ft_striteri.c ./src/ft_strjoin.c ./src/ft_strlcat.c ./src/ft_strlcpy.c \
 ./src/ft_strlen.c ./src/ft_strmapi.c ./src/ft_strncmp.c ./src/ft_strnstr.c ./src/ft_strrchr.c \
-./src/ft_strtrim.c ./src/ft_substr.c ./src/ft_tolower.c ./src/ft_toupper.c ./src/get_next_line_bonus.c \
-./src/get_next_line.c ./src/get_next_line_utils_bonus.c ./src/get_next_line_utils.c
+./src/ft_strtrim.c ./src/ft_substr.c ./src/ft_tolower.c ./src/ft_toupper.c \
+./src/get_next_line.c ./src/get_next_line_utils.c ./src/ft_wdcounter.c \
+./src/ft_strsplit.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)

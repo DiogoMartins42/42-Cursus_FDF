@@ -1,29 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fdf.h                                              :+:      :+:    :+:   */
+/*   ft_wdcounter.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dmanuel- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/15 13:23:48 by dmanuel-          #+#    #+#             */
-/*   Updated: 2023/02/15 13:23:50 by dmanuel-         ###   ########.fr       */
+/*   Created: 2023/02/16 11:39:25 by dmanuel-          #+#    #+#             */
+/*   Updated: 2023/02/16 11:40:23 by dmanuel-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FDF_H
-# define FDF_H
+#include "../include/libft.h"
 
-#include "../libft/include/libft.h"
-#include "../minilibx-linux/mlx.h"
-
-typedef struct
+int	ft_wdcounter(char const *str, char c)
 {
-    int width;
-    int height;
-    int **z_pos;
-}           fdf;
+	int	words;
+	int	i;
 
-void    read_file(char *file,fdf *data);
-
-#endif
-
+	i = 0;
+	words = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+	{
+		while (str[i] == c && str[i] != '\0')
+			i++;
+		if (str[i])
+			words++;
+		while (str[i] != c && str[i] != '\0')
+			i++;
+	}
+	return (words);
+}

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dmanuel- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 10:15:23 by dmanuel-          #+#    #+#             */
-/*   Updated: 2022/11/17 13:18:10 by dmanuel-         ###   ########.fr       */
+/*   Updated: 2022/11/25 11:10:08 by dmanuel-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ char	*ft_get_line(char *save)
 		return (NULL);
 	while (save[i] && save[i] != '\n')
 		i++;
-	s = (char *)ft_calloc((i + 2), sizeof(char));
+	s = (char *)ft_callocget((i + 2), sizeof(char));
 	if (!s)
 		return (NULL);
 	i = 0;
@@ -53,7 +53,7 @@ char	*ft_save(char *save)
 		free(save);
 		return (NULL);
 	}
-	s = (char *)malloc(sizeof(char) * (ft_strlen(save) - i + 1));
+	s = (char *)malloc(sizeof(char) * (ft_strlenget(save) - i + 1));
 	if (!s)
 		return (NULL);
 	i++;
@@ -74,7 +74,7 @@ char	*ft_read(int fd, char *save)
 	if (!buffer)
 		return (NULL);
 	bytes = 1;
-	while (!ft_strchr(save, '\n') && bytes != 0)
+	while (!ft_strchrget(save, '\n') && bytes != 0)
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (bytes == -1)
@@ -84,7 +84,7 @@ char	*ft_read(int fd, char *save)
 			return (NULL);
 		}
 		buffer[bytes] = '\0';
-		save = ft_strjoin(save, buffer);
+		save = ft_strjoinget(save, buffer);
 	}
 	free(buffer);
 	return (save);
@@ -92,15 +92,15 @@ char	*ft_read(int fd, char *save)
 
 char	*get_next_line(int fd)
 {
-	static char	*save;
+	static char	*save[1024];
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > 1023)
 		return (NULL);
-	save = ft_read(fd, save);
-	if (!save)
+	save[fd] = ft_read(fd, save[fd]);
+	if (!save[fd])
 		return (NULL);
-	line = ft_get_line(save);
-	save = ft_save(save);
+	line = ft_get_line(save[fd]);
+	save[fd] = ft_save(save[fd]);
 	return (line);
 }
