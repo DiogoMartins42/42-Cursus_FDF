@@ -30,9 +30,11 @@ int main(int argc, char **argv)
             ft_printf("%d", data->z_pos[i][j]);
             j++;
         }
+        free(data->z_pos[i]);
         ft_printf("\n");
         i++;
     }
+    free(data->z_pos);
     free(data);
 }
 

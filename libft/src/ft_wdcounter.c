@@ -30,5 +30,6 @@ int	ft_wdcounter(char const *str, char c)
 		while (str[i] != c && str[i] != '\0')
 			i++;
 	}
+	free(str);
 	return (words);
 }

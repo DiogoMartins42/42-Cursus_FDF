@@ -38,7 +38,8 @@ int get_width(char *file)
 
     fd = open(file, O_RDONLY, 0);
     line = get_next_line(fd);
-    width = ft_wdcounter(line, ' ');
+    if (line != NULL)
+        width = ft_wdcounter(line, ' ');
     free(line);
     close(fd);
     return (width);
@@ -68,7 +69,7 @@ void    read_file(char *file,fdf *data)
 
     data->height = get_height(file);
     data->width = get_width(file);
-    data->z_pos = malloc(sizeof(int *) * (data->height +1));
+    data->z_pos = malloc(sizeof(int *) * (data->height + 1));
     i = 0;
     fd = open(file, O_RDONLY, 0);
     line = get_next_line(fd);
@@ -80,7 +81,7 @@ void    read_file(char *file,fdf *data)
         line = get_next_line(fd);
         i++;
     }
+    free(line);
     close(fd);
-    data->z_pos[i] = NULL; 
+    data->z_pos[i] = NULL;
 }
-
