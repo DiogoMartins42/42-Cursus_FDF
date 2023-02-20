@@ -16,6 +16,9 @@
 #include "../libft/include/libft.h"
 #include "../minilibx-linux/mlx.h"
 
+# define MAX1(a, b) (a > b ? a : b)
+# define MOD(a) ((a < 0) ? -a : a)
+
 typedef struct
 {
     int width;
