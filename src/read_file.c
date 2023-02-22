@@ -36,6 +36,7 @@ int get_width(char *file)
     int     fd;
     char    *line;
 
+    width = 0;
     fd = open(file, O_RDONLY, 0);
     line = get_next_line(fd);
     if (line != NULL)
