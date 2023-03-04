@@ -11,10 +11,19 @@
 /* ************************************************************************** */
 #include "../include/fdf.h"
 
-int	handle_input(int keysym, fdf *data)
+static void	clear_win(fdf *data)
+{
+	mlx_clear_window(data->mlx_ptr, data->win_ptr);
+	mlx_destroy_window(data->mlx_ptr, data->win_ptr);
+}
+
+static int	handle_input(int keysym, fdf *data)
 {
 	if (keysym == XK_Escape)
-		mlx_destroy_window(data->mlx_ptr, data->win_ptr);
+	{	
+		exit (0);
+		clear_win(data);
+	}
 	return (0);
 }
 

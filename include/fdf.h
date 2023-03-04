@@ -13,12 +13,12 @@
 #ifndef FDF_H
 # define FDF_H
 
-#include "../libft/include/libft.h"
-#include "../minilibx-linux/mlx.h"
-#include <math.h>
-#include <stdlib.h>
-#include <X11/keysym.h>
-#include <X11/X.h>
+# include "../libft/include/libft.h"
+# include "../minilibx-linux/mlx.h"
+# include <math.h>
+# include <stdlib.h>
+# include <X11/keysym.h>
+# include <X11/X.h>
 
 # define MAX(a, b) (a > b ? a : b)
 # define MOD(a) ((a < 0) ? -a : a)
@@ -35,7 +35,7 @@ typedef struct
 	void	*win_ptr;
 }		fdf;
 
-void	read_file(char *file,fdf *data);
+void	read_file(char *file, fdf *data);
 void	algory(float x, float y, float x1, float y1, fdf *data);
 void	draw(fdf *data);
 

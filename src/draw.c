@@ -66,7 +66,7 @@ void	draw(fdf *data)
 
 	y = 0;
 	data->zoom = 20;
-	while (y < data ->height)
+	while (y < data->height)
 	{
 		x = 0;
 		while (x < data->width)
