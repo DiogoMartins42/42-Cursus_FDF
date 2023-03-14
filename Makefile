@@ -6,7 +6,7 @@
 #    By: dmanuel- <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/18 13:55:49 by dmanuel-          #+#    #+#              #
-#    Updated: 2023/03/04 10:27:27 by dmanuel-         ###   ########.fr        #
+#    Updated: 2023/03/14 11:17:35 by dmanuel-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ MLXFLAGS=-L ./minilibx-linux -lm -lmlx -Ilmlx -lXext -lX11
 DEPS= minilibx-linux/mlx.h libft/libft.a
 
 NAME=fdf
-SRC=src/main.c src/draw.c src/read_file.c
+SRC=src/main.c src/draw.c src/read_file.c src/calc.c
 OBJ=$(SRC:.c=.o)
 
 LIBFT = libft/libft.a

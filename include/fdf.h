@@ -33,10 +33,20 @@ typedef struct
 
 	void	*mlx_ptr;
 	void	*win_ptr;
+	
+	float	xpos;
+	float	ypos;
+	float	xpos1;
+	float	ypos1;
+	
 }		fdf;
 
+float	mod(float i);
 void	read_file(char *file, fdf *data);
-void	algory(float x, float y, float x1, float y1, fdf *data);
+void	algory(fdf *data);
+void	algory2(fdf *data);
 void	draw(fdf *data);
+void	isometric(float *x, float *y, int z);
+void	position(fdf *data);
 
 #endif
