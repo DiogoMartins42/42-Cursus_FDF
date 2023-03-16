@@ -12,95 +12,62 @@
 
 #include "../include/fdf.h"
 
-void	position(fdf *data)
+t_point	position(fdf *data, int a, t_point cord)
 {
-	int		z;
-	int		z1;
-
-	z = data->z_pos[(int)data->ypos][(int)data->xpos];
-	z1 = data->z_pos[(int)data->ypos1][(int)data->xpos1];
-	data->xpos *= data->zoom;
-	data->ypos *= data->zoom;
-	data->xpos1 *= data->zoom;
-	data->ypos1 *= data->zoom;
+	if (a == 1)
+		x1 = x + 1;
+	else
+		x1 = x;
+	if (a == 2)
+		y1 = y + 1;
+	else
+		y1 = y;
+	z = data->z_pos[(int)y][(int)x];
+	z1 = data->z_pos[(int)y1][(int)x1];
 	data->color = (z || z1) ? 0xe80c0c : 0xffffff;
-	isometric(&data->xpos, &data->ypos, z);
-	isometric(&data->xpos1, &data->ypos1, z1);
-	data->xpos += 150;
-	data->ypos += 150;
-	data->xpos1 += 150;
-	data->ypos1 += 150;
+	isometric(&x, &y, z);
+	isometric(&x1, &y1, z1);
+	return (cord)
 }
-void	algory(fdf *data)
+void	algory(fdf *data,  int a, t_point *cord)
 {
 	float	x_math;
 	float	y_math;
 	int		max;
 
-	data->xpos1 = data->xpos + 1;
-	position(data);
-	x_math = data->xpos1 - data->xpos;
-	y_math = data->ypos1 - data->ypos;
+	position(data, a, cord);
+	x_math = x1 - x;
+	y_math = y1 - y;
 	max = MAX(mod(x_math), mod(y_math));
 	x_math /= max;
 	y_math /= max;
-	while ((int)(data->xpos - data->xpos1) || (int)(data->ypos - data->ypos1))
+	while ((int)(x - x1) || (int)(y - y1))
 	{
-		mlx_pixel_put(data->mlx_ptr, data->win_ptr, data->xpos, data->ypos, data->color);
-		data->xpos += x_math;
-		data->ypos += y_math;
-	}
-}
-
-void	algory2(fdf *data)
-{
-	float	x_math;
-	float	y_math;
-	int		max;
-
-	data->ypos1 = data->ypos + 1;
-	position(data);
-	x_math = data->xpos1 - data->xpos;
-	y_math = data->ypos1 - data->ypos;
-	max = MAX(mod(x_math), mod(y_math));
-	x_math /= max;
-	y_math /= max;
-	while ((int)(data->xpos - data->xpos1) || (int)(data->ypos - data->ypos1))
-	{
-		mlx_pixel_put(data->mlx_ptr, data->win_ptr, data->xpos, data->ypos, data->color);
-		data->xpos += x_math;
-		data->ypos += y_math;
+		mlx_pixel_put(data->mlx_ptr, data->win_ptr, x, y, data->color);
+		x += x_math;
+		y += y_math;
 	}
 }
 
 void	draw(fdf *data)
 {
-	fdf	*posdata;
-	int		x;
-	int		y;
+	t_point	cord;
 	
-	posdata = data;
-	y = 0;
-	posdata->ypos = 0;
-	posdata->zoom = 20;
-	while (y < posdata->height)
+	cord = malloc(sizeof(t_point));
+	if (!cord)
+		exit (1);
+	cord->yi = -1;
+	while (cord->yi++ < data->height)
 	{
-		x = 0;
-
-		while (x < posdata->width)
+		cord->xi = -1;
+		cord->y = cord->yi;
+		while (cord->xi++ < data->width)
 		{
-			posdata->xpos = x;
-			posdata->ypos = y;
-			if (x < posdata->width - 1)
-				algory(posdata);
-			posdata->xpos = x;
-			posdata->ypos = y;
-			if (y < posdata->height - 1)
-			{
-				algory2(posdata);
-			}
-			x++;
+			cord->x = cord->xi;
+			if (cord->xi < data->width - 1)
+				algory(data, 1, cord);
+			if (y < data->height - 1)
+				algory(data, 2, cord);
 		}
-		y++;
 	}
 }

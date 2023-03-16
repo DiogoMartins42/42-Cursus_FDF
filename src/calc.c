@@ -21,6 +21,6 @@ float	mod(float i)
 
 void	isometric(float *x, float *y, int z)
 {
-	*x = (*x - *y) * cos(0.8);
-	*y = (*x + *y) * sin(0.8) - z;
+	*x = (*x - *y) * cos(0.8) + 150 * 20;
+	*y = (*x + *y) * sin(0.8) - z + 150 * 20;
 }
