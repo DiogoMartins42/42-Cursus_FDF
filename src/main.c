@@ -34,6 +34,7 @@ int	main(int argc, char **argv)
 	(void) argc;
 	data = (fdf *)malloc(sizeof(fdf));
 	read_file(argv[1], data);
+	data->zoom = 5;
 	data->mlx_ptr = mlx_init();
 	data->win_ptr = mlx_new_window(data->mlx_ptr, 1000, 1000, "FDF");
 	draw(data);

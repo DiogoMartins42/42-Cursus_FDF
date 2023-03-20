@@ -12,22 +12,21 @@
 
 #include "../include/fdf.h"
 
-t_point	position(fdf *data, int a, t_point cord)
+void	position(fdf *data, int a, t_point *cord)
 {
 	if (a == 1)
-		x1 = x + 1;
+		cord->x1 = cord->x + 1;
 	else
-		x1 = x;
+		cord->x1 = cord->x;
 	if (a == 2)
-		y1 = y + 1;
+		cord->y1 = cord->y + 1;
 	else
-		y1 = y;
-	z = data->z_pos[(int)y][(int)x];
-	z1 = data->z_pos[(int)y1][(int)x1];
-	data->color = (z || z1) ? 0xe80c0c : 0xffffff;
-	isometric(&x, &y, z);
-	isometric(&x1, &y1, z1);
-	return (cord)
+		cord->y1 = cord->y;
+	cord->z = data->z_pos[(int)cord->y][(int)cord->x];
+	cord->z1 = data->z_pos[(int)cord->y1][(int)cord->x1];
+	data->color = (cord->z || cord->z1) ? 0xe80c0c : 0xffffff;
+	isometric(cord);
+	//isometric(&cord->x1, &cord->y1, cord->z1);
 }
 void	algory(fdf *data,  int a, t_point *cord)
 {
@@ -36,38 +35,48 @@ void	algory(fdf *data,  int a, t_point *cord)
 	int		max;
 
 	position(data, a, cord);
-	x_math = x1 - x;
-	y_math = y1 - y;
+	x_math = cord->x1 - cord->x;
+	y_math = cord->y1 - cord->y;
 	max = MAX(mod(x_math), mod(y_math));
 	x_math /= max;
 	y_math /= max;
-	while ((int)(x - x1) || (int)(y - y1))
+	while ((int)(cord->x - cord->x1) || (int)(cord->y - cord->y1))
 	{
-		mlx_pixel_put(data->mlx_ptr, data->win_ptr, x, y, data->color);
-		x += x_math;
-		y += y_math;
+		mlx_pixel_put(data->mlx_ptr, data->win_ptr, cord->x, cord->y, data->color);
+		cord->x += x_math;
+		cord->y += y_math;
 	}
 }
 
 void	draw(fdf *data)
 {
-	t_point	cord;
+	t_point	*cord;
 	
 	cord = malloc(sizeof(t_point));
 	if (!cord)
 		exit (1);
-	cord->yi = -1;
-	while (cord->yi++ < data->height)
+	cord->yi = 0;
+	while (cord->yi < data->height)
 	{
-		cord->xi = -1;
+		cord->xi = 0;
 		cord->y = cord->yi;
-		while (cord->xi++ < data->width)
+		while (cord->xi < data->width)
 		{
 			cord->x = cord->xi;
 			if (cord->xi < data->width - 1)
+			{
+				cord->x = cord->xi;
+				cord->y = cord->yi;
 				algory(data, 1, cord);
-			if (y < data->height - 1)
+			}
+			if (cord->yi < data->height - 1)
+			{
+				cord->x = cord->xi;
+				cord->y = cord->yi;
 				algory(data, 2, cord);
+			}
+			cord->xi++;
 		}
+		cord->yi++;
 	}
 }

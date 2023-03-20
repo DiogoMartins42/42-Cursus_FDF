@@ -43,21 +43,25 @@ typedef struct
 
 typedef struct s_point
 {
-	int	x;
-	int	y;
-	int	z;
-	int	x1;
-	int	y1;
-	int	z1;
-	int	xi;
-	int	yi;
+	float	x;
+	float	y;
+	float	z;
+	float	x1;
+	float	y1;
+	float	z1;
+	float	xi;
+	float	yi;
+	float	xfinal;
+	float	yfinal;
+	float	x1final;
+	float	y1final;
 }		t_point;
 
 float	mod(float i);
 void	read_file(char *file, fdf *data);
-void	algory(fdf *data, int a, float x, float y);
+void	algory(fdf *data,  int a, t_point *cord);
 void	draw(fdf *data);
-void	isometric(float *x, float *y, int z);
-void	position(fdf *data, int a, float x, float y);
+void	isometric(t_point *cord);
+void	position(fdf *data, int a, t_point *cord);
 
 #endif
