@@ -62,7 +62,7 @@ void	make_z(int *z_line, char *line)
 	free(num);
 }
 
-void	read_file(char *file, fdf *data)
+void	read_file(char *file, t_fdf *data)
 {
 	int		fd;
 	char	*line;
