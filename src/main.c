@@ -9,64 +9,61 @@
 /*   Updated: 2023/02/16 11:13:02 by dmanuel-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../include/fdf.h"
 
-static void	free_z(int **z)
+static void	clear_mlx(t_mlx	*mlx)
 {
-	int	i;
+	mlx_clear_window(mlx->id, mlx->win->id);
+	mlx_destroy_window(mlx->id, mlx->win->id);
+	free_mlx(mlx);
+}
 
-	i = 0;
-	while (z[i])
-	{
-		free(z[i]);
-		i++;
+static int	handle_input(int keysym, t_mlx *mlx)
+{
+	if (keysym == XK_Escape)
+	{	
+		clear_mlx(mlx);
 	}
-	free(z);
+	return (0);
 }
 
-static void	clear_win(t_fdf *data)
+static int	close_win(void *param)
 {
-	//mlx_clear_window(data->mlx_ptr, data->win_ptr);
-	mlx_destroy_window(data->mlx_ptr, data->win_ptr);;
-	mlx_destroy_display(data->mlx_ptr);
-	free(data->mlx_ptr);
-	free(data);
-}
-
-static int	close_win(t_fdf *data)
-{
-	free_z(data->z_pos);
-	clear_win(data);
+	(void)param;
 	exit(0);
 	return (0);
 }
 
-static int	handle_input(int keysym, t_fdf *data)
+static void	create_window(t_mlx *mlx)
 {
-	if (keysym == XK_Escape)
-	{	
-		free_z(data->z_pos);
-		clear_win(data);
-		exit (0);
-	}
-	return (0);
+	t_mlx_win	*win;
+
+	win = mlx->win;
+	win->id = mlx_new_window(mlx->id, WIN_WIDTH, WIN_HEIGHT, "FDF");
+	mlx_hook(win->id, 17, 0, close_win, NULL);
+	mlx_key_hook(win->id, &handle_input, &mlx);
 }
 
 int	main(int argc, char **argv)
 {
+	char		*file_ext;
+	t_mlx		*mlx;
+
 	if (argc == 2)
 	{
-		t_fdf	*data;
-
-		(void) argc;
-		data = (t_fdf *)malloc(sizeof(t_fdf));
-		read_file(argv[1], data);
-		data->zoom = 5;
-		data->mlx_ptr = mlx_init();
-		data->win_ptr = mlx_new_window(data->mlx_ptr, 800, 800, "FDF");
-		draw(data);
-		mlx_key_hook(data->win_ptr, &handle_input, data);
-		mlx_hook(data->win_ptr, 17, 1L << 17, close_win, data);
-		mlx_loop(data->mlx_ptr);
+		file_ext = ft_strchr(argv[1], '.');
+		if (!ft_strncmp(file_ext, ".fdf", ft_strlen(file_ext)) \
+			&& check_file(argv[1]) == 0)
+		{
+			mlx = generate_t_mlx(argv[1]);
+			read_map(argv[1], mlx);
+			mlx->id = mlx_init();
+			create_window(mlx);
+			create_image(mlx, argv[1]);
+			mlx_loop(mlx->id);
+			clear_mlx(mlx);
+		}
 	}
+	return (0);
 }

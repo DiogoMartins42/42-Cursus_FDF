@@ -1,99 +1,94 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   draw.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dmanuel- <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/23 10:39:19 by dmanuel-          #+#    #+#             */
-/*   Updated: 2023/02/23 10:39:25 by dmanuel-         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "../include/fdf.h"
 
 #include "../include/fdf.h"
 
-float	max_calc(float a, float b)
+//Draw pixel.
+void	pix(t_mlx *mlx, int x, int y, int color)
 {
-	float	x;
-	
-	x = 0;
-	if (a > b)
-		x = a;
-	if (b > a)
-		x = b;
-	return (x);
+	char		*dst;
+	t_mlx_img	*img;
+
+	img = mlx->img;
+	dst = img->buffer + (y * img->size_line + x * (img->bpp / 8));
+	*(unsigned int *)dst = color;
 }
 
-void	position(t_fdf *data, int a, t_point *cord)
+void	draw_line(t_mlx *mlx, t_point *p0, t_point *p1)
 {
-	if (a == 1)
-	{
-		cord->x1 = cord->x + 1;
-		cord->y1 = cord->y;
-	}
+	double	s;
+	t_point	*cur;
+
+	cur = malloc(sizeof(t_point));
+	if (!cur)
+		exit(1);
+	s = (float)(p1->y - p0->y) / (float)(p1->x - p0->x);
+	if (s <= 1 && s >= -1)
+		draw_line_r(mlx, p0, p1, cur);
 	else
-		cord->x1 = cord->x;
-	if (a == 2)
-	{
-		cord->y1 = cord->y + 1;
-		cord->x1 = cord->x;
-	}
-	else
-		cord->y1 = cord->y;
-	cord->z = data->z_pos[(int)cord->y][(int)cord->x];
-	cord->z1 = data->z_pos[(int)cord->y1][(int)cord->x1];
-	if (cord->z != 0 || cord->z1 != 0)
-		data->color = 0xe80c0c;
-	else
-		data->color = 0xffffff;
-	isometric(cord);
+		draw_line_rr(mlx, p0, p1, cur);
+	free(cur);
 }
 
-void	algory(t_fdf *data, int a, t_point *cord)
+// calculate final coordinates
+t_point	*set_coords(t_mlx *mlx, char *argv, int y0, int x0)
 {
-	float	x_math;
-	float	y_math;
-	int		max;
+	int			x;
+	int			y;
+	int			z;
+	t_point		*margin;
+	t_point		*point;
 
-	cord->x = cord->xi;
-	cord->y = cord->yi;
-	position(data, a, cord);
-	x_math = cord->x1 - cord->x;
-	y_math = cord->y1 - cord->y;
-	max = max_calc(mod(x_math), mod(y_math));
-	x_math /= max;
-	y_math /= max;
-	while ((int)(cord->x - cord->x1) || (int)(cord->y - cord->y1))
-	{
-		mlx_pixel_put(data->mlx_ptr, data->win_ptr, cord->x,
-			cord->y, data->color);
-		cord->x += x_math;
-		cord->y += y_math;
-	}
-}
-
-void	draw(t_fdf *data)
-{
-	t_point	*cord;
-
-	cord = malloc(sizeof(t_point));
-	if (!cord)
+	margin = malloc(sizeof(t_point));
+	point = malloc(sizeof(t_point));
+	if (!point || !margin)
 		exit (1);
-	cord->yi = 0;
-	while (cord->yi < data->height)
+	margin->y = count_y_cols(argv, 1);
+	margin->x = count_x_rows(argv);
+	while ((y0 * mlx->zoom) > (WIN_WIDTH / 2) || (x0 * mlx->zoom) > (WIN_HEIGHT / 2))
+		mlx->zoom--;
+	x = x0 * mlx->zoom;
+	y = y0 * mlx->zoom;
+	z = mlx->map[y0]->alt[x0]->value;
+	point->x = ((x - y) * cos(0.523599) + margin->x * mlx->zoom + mlx->zoom);
+	point->y = (-z + (x + y) * sin(0.523599) + margin->y * mlx->zoom / 2);
+	point->z = z;
+	point->color = mlx->map[y0]->alt[x0]->color;
+	return (point);
+}
+
+// Initiate map draw.
+void	draw_map(t_mlx	*mlx, char *argv)
+{
+	int		x;
+	int		y;
+	int		zoom;
+
+	y = 0;
+	zoom = mlx->zoom;
+	while (mlx->map[y])
 	{
-		cord->xi = 0;
-		cord->y = cord->yi;
-		while (cord->xi < data->width)
+		x = 0;
+		if (zoom != mlx->zoom)
 		{
-			cord->x = cord->xi;
-			if (cord->xi < data->width - 1)
-				algory(data, 1, cord);
-			if (cord->yi < data->height - 1)
-				algory(data, 2, cord);
-			cord->xi++;
+			mlx_destroy_image(mlx->id, mlx->img->id);
+			create_image(mlx, argv);
+			return ;
 		}
-		cord->yi++;
+		if (draw_map_x(mlx, argv, y, x) == 1)
+			return ;
+		y++;
 	}
-	free(cord);
+}
+
+// Create image and draw map.
+void	create_image(t_mlx *mlx, char *argv)
+{
+	t_mlx_img	*img;
+
+	img = mlx->img;
+	img->id = mlx_new_image(mlx->id, WIN_WIDTH, WIN_HEIGHT);
+	img->buffer = mlx_get_data_addr(img->id, &img->bpp, \
+		&img->size_line, &img->endian);
+	draw_map(mlx, argv);
+	mlx_put_image_to_window(mlx->id, mlx->win->id, img->id, 0, 0);
 }

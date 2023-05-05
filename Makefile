@@ -16,7 +16,8 @@ MLXFLAGS=-L ./minilibx-linux -lm -lmlx -Ilmlx -lXext -lX11
 DEPS= minilibx-linux/mlx.h libft/libft.a
 
 NAME=fdf
-SRC=src/main.c src/draw.c src/read_file.c src/calc.c
+SRC=src/main.c src/draw.c src/read_file.c src/calc.c src/clear.c src/color.c \
+    src/mydraw.c
 OBJ=$(SRC:.c=.o)
 
 LIBFT = libft/libft.a
