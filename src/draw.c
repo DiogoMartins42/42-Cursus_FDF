@@ -5,69 +5,100 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dmanuel- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/23 10:39:19 by dmanuel-          #+#    #+#             */
-/*   Updated: 2023/02/23 10:39:25 by dmanuel-         ###   ########.fr       */
+/*   Created: 2023/05/06 10:10:49 by dmanuel-          #+#    #+#             */
+/*   Updated: 2023/05/06 10:11:02 by dmanuel-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/fdf.h"
 
-t_point	position(fdf *data, int a, t_point cord)
+void	pix(t_mlx *mlx, int x, int y, int color)
 {
-	if (a == 1)
-		x1 = x + 1;
-	else
-		x1 = x;
-	if (a == 2)
-		y1 = y + 1;
-	else
-		y1 = y;
-	z = data->z_pos[(int)y][(int)x];
-	z1 = data->z_pos[(int)y1][(int)x1];
-	data->color = (z || z1) ? 0xe80c0c : 0xffffff;
-	isometric(&x, &y, z);
-	isometric(&x1, &y1, z1);
-	return (cord)
-}
-void	algory(fdf *data,  int a, t_point *cord)
-{
-	float	x_math;
-	float	y_math;
-	int		max;
+	char		*dst;
+	t_mlx_img	*img;
 
-	position(data, a, cord);
-	x_math = x1 - x;
-	y_math = y1 - y;
-	max = MAX(mod(x_math), mod(y_math));
-	x_math /= max;
-	y_math /= max;
-	while ((int)(x - x1) || (int)(y - y1))
-	{
-		mlx_pixel_put(data->mlx_ptr, data->win_ptr, x, y, data->color);
-		x += x_math;
-		y += y_math;
-	}
+	img = mlx->img;
+	dst = img->buffer + (y * img->size_line + x * (img->bpp / 8));
+	*(unsigned int *)dst = color;
 }
 
-void	draw(fdf *data)
+void	draw_line(t_mlx *mlx, t_point *p0, t_point *p1)
 {
-	t_point	cord;
-	
-	cord = malloc(sizeof(t_point));
-	if (!cord)
+	double	s;
+	t_point	*cur;
+
+	cur = malloc(sizeof(t_point));
+	if (!cur)
+		exit(1);
+	s = (float)(p1->y - p0->y) / (float)(p1->x - p0->x);
+	if (s <= 1 && s >= -1)
+		draw_line_r(mlx, p0, p1, cur);
+	else
+		draw_line_rr(mlx, p0, p1, cur);
+	free(cur);
+}
+
+// calculate final coordinates
+t_point	*set_coords(t_mlx *mlx, char *argv, int y0, int x0)
+{
+	int			x;
+	int			y;
+	int			z;
+	t_point		*margin;
+	t_point		*point;
+
+	margin = malloc(sizeof(t_point));
+	point = malloc(sizeof(t_point));
+	if (!point || !margin)
 		exit (1);
-	cord->yi = -1;
-	while (cord->yi++ < data->height)
+	margin->y = count_y_cols(argv, 1);
+	margin->x = count_x_rows(argv);
+	while ((y0 * mlx->zoom) > (WIN_WIDTH / 2) || (x0 * mlx->zoom) > \
+	(WIN_HEIGHT / 2))
+		mlx->zoom--;
+	x = x0 * mlx->zoom;
+	y = y0 * mlx->zoom;
+	z = mlx->map[y0]->alt[x0]->value;
+	point->x = ((x - y) * cos(0.523599) + margin->x * mlx->zoom + mlx->zoom);
+	point->y = (-z + (x + y) * sin(0.523599) + margin->y * mlx->zoom / 2);
+	point->z = z;
+	point->color = mlx->map[y0]->alt[x0]->color;
+	return (point);
+}
+
+// Initiate map draw.
+void	draw_map(t_mlx	*mlx, char *argv)
+{
+	int		x;
+	int		y;
+	int		zoom;
+
+	y = 0;
+	zoom = mlx->zoom;
+	while (mlx->map[y])
 	{
-		cord->xi = -1;
-		cord->y = cord->yi;
-		while (cord->xi++ < data->width)
+		x = 0;
+		if (zoom != mlx->zoom)
 		{
-			cord->x = cord->xi;
-			if (cord->xi < data->width - 1)
-				algory(data, 1, cord);
-			if (y < data->height - 1)
-				algory(data, 2, cord);
+			mlx_destroy_image(mlx->id, mlx->img->id);
+			create_image(mlx, argv);
+			return ;
 		}
+		if (draw_map_x(mlx, argv, y, x) == 1)
+			return ;
+		y++;
 	}
+}
+
+// Create image and draw map.
+void	create_image(t_mlx *mlx, char *argv)
+{
+	t_mlx_img	*img;
+
+	img = mlx->img;
+	img->id = mlx_new_image(mlx->id, WIN_WIDTH, WIN_HEIGHT);
+	img->buffer = mlx_get_data_addr(img->id, &img->bpp, \
+		&img->size_line, &img->endian);
+	draw_map(mlx, argv);
+	mlx_put_image_to_window(mlx->id, mlx->win->id, img->id, 0, 0);
 }

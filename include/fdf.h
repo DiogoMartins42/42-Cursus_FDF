@@ -13,51 +13,79 @@
 #ifndef FDF_H
 # define FDF_H
 
+# include <stdlib.h>
+# include <fcntl.h>
+# include <unistd.h>
+# include <math.h>
 # include "../libft/include/libft.h"
 # include "../minilibx-linux/mlx.h"
-# include <math.h>
-# include <stdlib.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
 
-# define MAX(a, b) (a > b ? a : b)
-# define MOD(a) ((a < 0) ? -a : a)
+# define WIN_WIDTH  1280
+# define WIN_HEIGHT 720
 
-typedef struct
+typedef struct s_map_alt
 {
-	int		width;
-	int		height;
-	int		**z_pos;
-	int		zoom;
-	int		color;
+	int	value;
+	int	color;
+}		t_map_alt;
 
-	void	*mlx_ptr;
-	void	*win_ptr;
-	
-	float	xpos;
-	float	ypos;
-	float	xpos1;
-	float	ypos1;
-	
-}		fdf;
+typedef struct s_mlx_map
+{
+	t_map_alt	**alt;
+}	t_mlx_map;
+
+typedef struct s_mlx_img
+{
+	void	*id;
+	char	*buffer;
+	int		bpp;
+	int		size_line;
+	int		endian;
+	int		height;
+	int		width;
+}	t_mlx_img;
+
+typedef struct s_mlx_win
+{
+	void			*id;
+}	t_mlx_win;
+
+typedef struct s_mlx
+{
+	int			zoom;
+	void		*id;
+	t_mlx_win	*win;
+	t_mlx_img	*img;
+	t_mlx_map	**map;
+}	t_mlx;
 
 typedef struct s_point
 {
 	int	x;
 	int	y;
 	int	z;
-	int	x1;
-	int	y1;
-	int	z1;
-	int	xi;
-	int	yi;
-}		t_point;
+	int	color;
+}	t_point;
 
-float	mod(float i);
-void	read_file(char *file, fdf *data);
-void	algory(fdf *data, int a, float x, float y);
-void	draw(fdf *data);
-void	isometric(float *x, float *y, int z);
-void	position(fdf *data, int a, float x, float y);
+int		count_x_rows(char *argv);
+int		count_y_cols(char *argv, int x);
+int		getcolor(t_point *p0, t_point *cur, t_point *p1);
+int		draw_map_x(t_mlx *mlx, char *argv, int x, int y);
+int		draw_map_y(t_mlx *mlx, char *argv, int x, int y);
+int		check_file(char *argv);
+
+void	free_mlx(t_mlx *mlx);
+void	create_image(t_mlx *mlx, char *argv);
+void	read_map(char *argv, t_mlx *mlx);
+void	pix(t_mlx *mlx, int x, int y, int color);
+void	draw_line(t_mlx *mlx, t_point *p0, t_point *p1);
+void	draw_line_r(t_mlx *mlx, t_point *p0, t_point *p1, t_point *cur);
+void	draw_line_rr(t_mlx *mlx, t_point *p0, t_point *p1, t_point *cur);
+void	free_mlxmap(t_mlx_map *mlx);
+
+t_mlx	*generate_t_mlx(char *argv);
+t_point	*set_coords(t_mlx *mlx, char *argv, int x0, int y0);
 
 #endif
